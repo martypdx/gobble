@@ -1,13 +1,11 @@
 import { lookup } from 'mime';
-import { readFile } from 'sander';
+import { Promise, createReadStream } from 'sander';
 
 export default function serveFile ( filepath, request, response ) {
-	return readFile( filepath ).then( data => {
-		response.statusCode = 200;
-		response.setHeader( 'Content-Type', lookup( filepath ) );
-		response.setHeader( 'Content-Length', data.length );
 
-		response.write( data );
-		response.end();
-	});
+	response.statusCode = 200;
+	response.setHeader( 'Content-Type', lookup( filepath ) );
+	createReadStream( filepath ).pipe( response );
+
+	return Promise.resolve();
 }
